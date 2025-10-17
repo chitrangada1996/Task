@@ -1,0 +1,5 @@
+{
+  "name": "TaskMate",
+  "description": "A minimal, fast task management MVP for product managers, combining the simplicity of Linear with the flexible workspace of Notion.",
+  "requestFramePermissions": []
+}

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { User, Priority, NewTaskData } from '../types';
 import { CloseIcon } from './icons';
@@ -16,6 +17,8 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({ isOpen, users, onClo
   const [description, setDescription] = useState('');
   const [priority, setPriority] = useState<Priority>('medium');
   const [assigneeId, setAssigneeId] = useState<string>('');
+  const [tags, setTags] = useState<string[]>([]);
+  const [currentTag, setCurrentTag] = useState('');
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -25,6 +28,8 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({ isOpen, users, onClo
       setDescription('');
       setPriority('medium');
       setAssigneeId(users[0]?.id || '');
+      setTags([]);
+      setCurrentTag('');
       setError('');
       modalRef.current?.focus();
     }
@@ -46,13 +51,33 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({ isOpen, users, onClo
     };
   }, [isOpen, onClose]);
 
+  const handleAddTag = () => {
+    const newTag = currentTag.trim().toLowerCase();
+    if (newTag && !tags.includes(newTag) && tags.length < 5) {
+        setTags([...tags, newTag]);
+    }
+    setCurrentTag('');
+  };
+
+  const handleTagInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === 'Enter' || e.key === ',') {
+          e.preventDefault();
+          handleAddTag();
+      }
+  };
+
+  const handleRemoveTag = (tagToRemove: string) => {
+      setTags(tags.filter(tag => tag !== tagToRemove));
+  };
+
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) {
       setError('Title is required.');
       return;
     }
-    onSave({ title, description, priority, assigneeId });
+    onSave({ title, description, priority, assigneeId, tags });
     onClose();
   };
 
@@ -103,10 +128,34 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({ isOpen, users, onClo
                 id="description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                rows={4}
+                rows={3}
                 placeholder="Add more details about the task..."
                 className="w-full bg-secondary border border-border rounded-md px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-ring"
               />
+            </div>
+             <div>
+                <label htmlFor="tags" className="text-sm font-semibold text-muted-foreground block mb-1">Tags</label>
+                <div className="flex flex-wrap items-center gap-2 bg-secondary border border-border rounded-md px-2 py-1">
+                    {tags.map(tag => (
+                    <span key={tag} className="flex items-center gap-1 bg-background text-foreground text-xs px-2 py-0.5 rounded-full">
+                        {tag}
+                        <button type="button" onClick={() => handleRemoveTag(tag)} className="text-muted-foreground hover:text-foreground">
+                        <CloseIcon className="w-3 h-3" />
+                        </button>
+                    </span>
+                    ))}
+                    <input
+                    id="tags"
+                    type="text"
+                    value={currentTag}
+                    onChange={(e) => setCurrentTag(e.target.value)}
+                    onKeyDown={handleTagInputKeyDown}
+                    onBlur={handleAddTag}
+                    placeholder={tags.length < 5 ? "Add a tag..." : "Max 5 tags"}
+                    className="bg-transparent focus:outline-none flex-grow text-sm py-0.5"
+                    disabled={tags.length >= 5}
+                    />
+                </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>

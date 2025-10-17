@@ -1,3 +1,4 @@
+
 import { MOCK_TASKS, MOCK_USERS, MOCK_PAGES } from '../mocks/data';
 import { Task, User, Page, NewTaskData } from '../types';
 
@@ -53,7 +54,9 @@ export const createTask = (data: NewTaskData): Promise<Task> => {
             assigneeId: data.assigneeId,
             status: 'todo',
             dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-            tags: ['new'],
+            tags: data.tags,
+            subtasks: [],
+            comments: [],
         };
         MOCK_TASKS.unshift(newTask);
         resolve(newTask);

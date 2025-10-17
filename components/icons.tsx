@@ -1,4 +1,4 @@
-import { Signal, SignalLow, SignalMedium, X, Calendar as CalendarIcon, Tag, Plus, Command, FileText as FileTextIcon, CheckSquare, Sun, Moon, User } from 'lucide-react';
+import { Signal, SignalLow, SignalMedium, X, Calendar as CalendarIcon, Tag, Plus, Command, FileText as FileTextIcon, CheckSquare, Sun, Moon, User, MessageSquare } from 'lucide-react';
 import React from 'react';
 import { Priority } from '../types';
 
@@ -28,3 +28,4 @@ export const TaskIcon = CheckSquare;
 export const SunIcon = Sun;
 export const MoonIcon = Moon;
 export const UserIcon = User;
+export const CommentIcon = MessageSquare;

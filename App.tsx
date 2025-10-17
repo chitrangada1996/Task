@@ -63,15 +63,21 @@ function App() {
   
   const handleUpdateTask = async (updatedTask: Task) => {
     try {
-      await updateTask(updatedTask);
+      // Optimistic UI update
       setTasks(prevTasks => 
         prevTasks.map(task => (task.id === updatedTask.id ? updatedTask : task))
       );
+
       if (selectedTask && selectedTask.id === updatedTask.id) {
         setSelectedTask(updatedTask);
       }
+      // API call
+      await updateTask(updatedTask);
+
     } catch (error) {
       console.error("Failed to save task", error);
+      // Revert UI on error if needed
+      loadData();
     }
   };
 
@@ -131,7 +137,7 @@ function App() {
         return <PlanningDocs />;
       case 'board':
       default:
-        return <Board initialTasks={tasks} users={users} onOpenTask={handleOpenTask} />;
+        return <Board initialTasks={tasks} users={users} onUpdateTask={handleUpdateTask} />;
     }
   };
 

@@ -9,10 +9,12 @@ interface TaskColumnProps {
   title: string;
   tasks: Task[];
   users: User[];
-  onOpenTask: (task: Task) => void;
+  expandedTaskId: string | null;
+  onToggleExpand: (taskId: string) => void;
+  onUpdateTask: (task: Task) => void;
 }
 
-export const TaskColumn: React.FC<TaskColumnProps> = ({ id, title, tasks, users, onOpenTask }) => {
+export const TaskColumn: React.FC<TaskColumnProps> = ({ id, title, tasks, users, expandedTaskId, onToggleExpand, onUpdateTask }) => {
   const { setNodeRef, isOver } = useDroppable({ id });
   
   const userMap = new Map(users.map(u => [u.id, u]));
@@ -30,7 +32,14 @@ export const TaskColumn: React.FC<TaskColumnProps> = ({ id, title, tasks, users,
         >
           <div className="space-y-3">
             {tasks.map(task => (
-              <TaskCard key={task.id} task={task} assignee={userMap.get(task.assigneeId)} onOpen={onOpenTask} />
+              <TaskCard 
+                key={task.id} 
+                task={task} 
+                assignee={userMap.get(task.assigneeId)} 
+                expandedTaskId={expandedTaskId}
+                onToggleExpand={onToggleExpand}
+                onUpdateTask={onUpdateTask}
+              />
             ))}
           </div>
         </div>

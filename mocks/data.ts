@@ -23,7 +23,15 @@ export const MOCK_TASKS: Task[] = [
     assigneeId: 'user-1',
     dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
     tags: ['design', 'web'],
-    description: 'Create a Figma mockup for the new v2 landing page, focusing on conversion rates.'
+    description: 'Create a Figma mockup for the new v2 landing page, focusing on conversion rates.',
+    subtasks: [
+        { id: 'sub-1', title: 'Create initial wireframes', completed: true },
+        { id: 'sub-2', title: 'Develop component library', completed: false },
+        { id: 'sub-3', title: 'Design final mockup', completed: false },
+    ],
+    comments: [
+        { id: 'comment-3', authorId: 'user-4', content: 'Looks great so far! Can we try a version with a darker color palette?', createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString() }
+    ]
   },
   {
     id: 'task-2',
@@ -33,7 +41,12 @@ export const MOCK_TASKS: Task[] = [
     assigneeId: 'user-2',
     dueDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
     tags: ['backend', 'security'],
-    description: 'Set up JWT-based authentication for the main API.'
+    description: 'Set up JWT-based authentication for the main API.',
+    subtasks: [
+        { id: 'sub-4', title: 'Setup database schema', completed: true },
+        { id: 'sub-5', title: 'Implement OAuth endpoints', completed: true },
+        { id: 'sub-6', title: 'Write integration tests', completed: false },
+    ]
   },
   {
     id: 'task-3',
@@ -43,7 +56,12 @@ export const MOCK_TASKS: Task[] = [
     assigneeId: 'user-3',
     dueDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
     tags: ['bug', 'mobile'],
-    description: 'The search bar is not rendering correctly on iOS devices. Blocked by API team.'
+    description: 'The search bar is not rendering correctly on iOS devices. Blocked by API team.',
+    subtasks: [],
+    comments: [
+        { id: 'comment-1', authorId: 'user-1', content: "Just checking in on the status of this. Any updates from the API team?", createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString() },
+        { id: 'comment-2', authorId: 'user-3', content: "Still blocked. I've pinged them again.", createdAt: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString() }
+    ]
   },
   {
     id: 'task-4',
@@ -53,7 +71,8 @@ export const MOCK_TASKS: Task[] = [
     assigneeId: 'user-4',
     dueDate: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
     tags: ['docs'],
-    description: 'Document all public endpoints using Swagger/OpenAPI.'
+    description: 'Document all public endpoints using Swagger/OpenAPI.',
+    comments: []
   },
   {
     id: 'task-5',
@@ -63,7 +82,12 @@ export const MOCK_TASKS: Task[] = [
     assigneeId: 'user-2',
     dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
     tags: ['devops'],
-    description: 'Configure GitHub Actions to automate testing and deployment.'
+    description: 'Configure GitHub Actions to automate testing and deployment.',
+     subtasks: [
+        { id: 'sub-7', title: 'Configure build step', completed: true },
+        { id: 'sub-8', title: 'Configure test step', completed: false },
+        { id: 'sub-9', title: 'Configure deployment to staging', completed: false },
+    ]
   },
   {
     id: 'task-6',

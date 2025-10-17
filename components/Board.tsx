@@ -1,7 +1,5 @@
-
 import React, { useState, useEffect } from 'react';
 import { DndContext, DragEndEvent, closestCorners, PointerSensor, useSensor, useSensors, DragOverlay, DragStartEvent } from '@dnd-kit/core';
-import { arrayMove } from '@dnd-kit/sortable';
 import { Task, Status, User } from '../types';
 import { STATUS_COLUMNS } from '../constants';
 import { TaskColumn } from './TaskColumn';
@@ -13,7 +11,7 @@ type BoardState = Record<Status, Task[]>;
 interface BoardProps {
   initialTasks: Task[];
   users: User[];
-  onOpenTask: (task: Task) => void;
+  onUpdateTask: (task: Task) => void;
 }
 
 const initializeBoard = (tasks: Task[]): BoardState => {
@@ -26,9 +24,10 @@ const initializeBoard = (tasks: Task[]): BoardState => {
   return board;
 };
 
-export const Board: React.FC<BoardProps> = ({ initialTasks, users, onOpenTask }) => {
+export const Board: React.FC<BoardProps> = ({ initialTasks, users, onUpdateTask }) => {
   const [boardState, setBoardState] = useLocalStorage<BoardState>('taskmate_board_v1', initializeBoard(initialTasks));
   const [activeTask, setActiveTask] = useState<Task | null>(null);
+  const [expandedTaskId, setExpandedTaskId] = useState<string | null>(null);
 
   useEffect(() => {
      setBoardState(initializeBoard(initialTasks));
@@ -61,8 +60,14 @@ export const Board: React.FC<BoardProps> = ({ initialTasks, users, onOpenTask })
       }
       return null;
   }
+  
+  const handleToggleExpand = (taskId: string) => {
+    setExpandedTaskId(prevId => (prevId === taskId ? null : taskId));
+  };
+
 
   const handleDragStart = (event: DragStartEvent) => {
+    setExpandedTaskId(null); // Collapse any open task before dragging
     const { active } = event;
     const task = findTask(active.id.toString());
     setActiveTask(task);
@@ -80,10 +85,18 @@ export const Board: React.FC<BoardProps> = ({ initialTasks, users, onOpenTask })
     const overColumn = overIsColumn ? over.id as Status : findColumnForTask(over.id.toString());
 
     if (!originalColumn || !overColumn) return;
+    
+    const taskToMove = findTask(active.id.toString());
+    if (!taskToMove) return;
+
+    const updatedTask = { ...taskToMove, status: overColumn };
 
     setBoardState(prev => {
       const newBoardState = { ...prev };
       const activeTaskIndex = newBoardState[originalColumn].findIndex(t => t.id === active.id);
+      
+      if (activeTaskIndex === -1) return prev; // Should not happen
+
       const [movedTask] = newBoardState[originalColumn].splice(activeTaskIndex, 1);
       
       movedTask.status = overColumn;
@@ -103,6 +116,8 @@ export const Board: React.FC<BoardProps> = ({ initialTasks, users, onOpenTask })
       }
       return newBoardState;
     });
+
+    onUpdateTask(updatedTask);
   };
 
   return (
@@ -115,12 +130,14 @@ export const Board: React.FC<BoardProps> = ({ initialTasks, users, onOpenTask })
             title={title}
             tasks={boardState[status as Status] || []}
             users={users}
-            onOpenTask={onOpenTask}
+            expandedTaskId={expandedTaskId}
+            onToggleExpand={handleToggleExpand}
+            onUpdateTask={onUpdateTask}
           />
         ))}
       </div>
       <DragOverlay>
-        {activeTask ? <TaskCard task={activeTask} assignee={userMap.get(activeTask.assigneeId)} onOpen={() => {}} /> : null}
+        {activeTask ? <TaskCard task={activeTask} assignee={userMap.get(activeTask.assigneeId)} expandedTaskId={null} onToggleExpand={() => {}} onUpdateTask={() => {}} /> : null}
       </DragOverlay>
     </DndContext>
   );
